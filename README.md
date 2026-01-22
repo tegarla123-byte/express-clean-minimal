@@ -1,34 +1,28 @@
-# Express.js Clean Architecture Project
+# Express.js Clean Architecture with Modular Features
 
-This project implements a RESTful API for User management using **Clean Architecture** principles. It demonstrates separation of concerns, server-side pagination, and full CRUD capabilities using **Express.js** and **Knex.js** (PostgreSQL).
+This project implements a RESTful API using **Clean Architecture** principles, refactored into a **Feature-Based (Modular)** structure. It includes comprehensive features like User Management, Book Inventory, and a Borrowing System.
+
+## 🌟 Features
+
+*   **Clean Architecture**: Separation of concerns into Domain, Use Cases, Interfaces, and Infrastructure.
+*   **Modular Structure**: Code organized by feature (`users`, `books`, `borrowing`) in `src/modules`.
+*   **Database**: PostgreSQL integration using **Knex.js** query builder.
+*   **Logging**:
+    *   Example: `application-YYYY-MM-DD.log`
+    *   Detailed request logging (Method, URL, Status, Speed).
+    *   Error logging with stack traces.
+    *   Database query logging.
+    *   Daily Log Rotation via `winston-daily-rotate-file`.
+*   **CRUD Operations**: Full Create, Read, Update, Delete for Users and Books.
+*   **Complex Business Logic**: Borrowing system with atomic stock management.
+*   **Server-Side Pagination**: Efficient data retrieval.
+*   **Hot Reload**: `nodemon` for development.
 
 ## 🏗️ Architecture Overview
 
-The project follows the "Clean Architecture" pattern (also known as Onion Architecture). The dependency rule is: **Dependencies only point inwards.**
+The project adheres to Clean Architecture but organizes files by **Feature** rather than **Layer** to minimize "fat" layers and improve cohesion.
 
-### Layers
-
-1.  **Domain (Core)** `src/domain/`
-    *   Contains **Entities** (`User.js`) and **Business Objects** (`PaginatedResult.js`).
-    *   Contains **Repository Interfaces** (`UserRepository.js`). This layer *defines* how data access should behave but *implements* nothing.
-    *   **Dependencies**: None. Pure Javascript.
-
-2.  **Use Cases (Application Business Rules)** `src/usecase/`
-    *   Contains specific application actions (e.g., `CreateUser.js`, `GetPaginatedUsers.js`).
-    *   Orchestrates the flow of data to and from the Domain entities.
-    *   **Dependencies**: Domain.
-
-3.  **Interface Adapters** `src/interface/`
-    *   Contains **Controllers** (`UserController.js`).
-    *   Converts data from the web format (HTTP Request) to the format convenient for the Use Cases and vice versa.
-    *   **Dependencies**: Use Cases.
-
-4.  **Infrastructure (Frameworks & Drivers)** `src/infrastructure/`
-    *   Contains frameworks (Express), Database connections (`db.js`), and Repository Implementations (`KnexUserRepository.js`).
-    *   This is where the "wiring" happens (`server.js`).
-    *   **Dependencies**: Interface, Use Cases, library drivers (pg, knex, express).
-
-### Diagram
+### Architecture Diagram
 
 ```mermaid
 graph TD
@@ -78,7 +72,25 @@ graph TD
     class RepoInt,Entity domain;
 ```
 
----
+### Directory Structure
+```
+src/
+├── shared/                 # Shared utilities and infrastructure
+│   ├── domain/             # Shared entities (e.g., PaginatedResult)
+│   └── infrastructure/     # Server, DB Config, Logger
+├── modules/
+│   ├── users/              # User Management Feature
+│   │   ├── domain/         # User Entity, Repository Interface
+│   │   ├── usecase/        # CreateUser, GetUsers, etc.
+│   │   ├── interface/      # UserController
+│   │   └── infrastructure/ # KnexUserRepository
+│   ├── books/              # Book Inventory Feature
+│   └── borrowing/          # Borrowing System Feature
+```
+
+### Dependency Rule
+**Dependencies only point inwards.**
+`Infrastructure` -> `Interface` -> `Use Cases` -> `Domain`
 
 ## 🚀 Getting Started
 
@@ -89,32 +101,36 @@ graph TD
 
 ### Installation
 
-1.  Clone the repo:
+1.  **Clone the repo**:
     ```bash
     git clone <repo_url>
     cd myapp
     ```
-2.  Install dependencies:
+
+2.  **Install dependencies**:
     ```bash
     npm install
     ```
-3.  Configure Environment:
-    Create a `.env` file in the root:
-    ```env
-    DATABASE_URL=postgresql://user:password@localhost:5432/myapp_db
-    PORT=3000
-    NODE_ENV=development
+
+3.  **Configure Environment**:
+    Copy `.env.example` to `.env` and fill in your credentials:
+    ```bash
+    cp .env.example .env
     ```
-4.  Setup Database:
-    *   Ensure your Postgres database exists (`myapp_db`).
-    *   Run the schema script:
+    **Key Variables**:
+    *   `DATABASE_URL`: `postgres://user:password@localhost:5432/myapp_db`
+    *   `PORT`: `3000`
+
+4.  **Setup Database**:
+    *   Ensure your Postgres database exists.
+    *   Run the setup script to create tables (`users`, `books`, `borrows`):
         ```bash
-        psql -U <user> -d <db> -f src/infrastructure/schema.sql
+        node src/shared/infrastructure/setup_db.js
         ```
 
 ### Running the App
 
-*   **Development Mode** (with Hot Reload):
+*   **Development Mode** (Hot Reload):
     ```bash
     npm run dev
     ```
@@ -125,56 +141,23 @@ graph TD
 
 API runs at `http://localhost:3000`.
 
----
+## 🧪 Testing
+
+We use **.http** files for easy testing with the VS Code REST Client extension.
+
+*   **`users.http`**: Test User CRUD operations.
+*   **`books.http`**: Test Book CRUD, Borrowing, Returning, and Stock updates.
+
+## 📝 Logging
+
+Logs are stored in the `/logs` directory at the project root.
+*   **`application-%DATE%.log`**: General info and requests.
+*   **`error-%DATE%.log`**: Error stacks and critical issues.
+*   **Console**: Logs are also output to the console in development mode.
 
 ## 🛠️ Development Guide
 
-### How to Add a New Feature
-
-1.  **Domain**: Define the new Entity or update existing ones in `src/domain`. Update the `Repository` interface if new data access methods are needed.
-2.  **Infrastructure (Repo)**: Implement the new method in `src/infrastructure/KnexUserRepository.js`.
-3.  **Use Case**: Create a new Use Case file in `src/usecase/` (e.g., `ChangePassword.js`).
-    *   Inject the Repository in the constructor.
-    *   Implement an `execute()` method.
-4.  **Interface**: Update `UserController.js` to handle the HTTP request.
-    *   Inject the new Use Case in the constructor.
-    *   Create a method (e.g., `changePassword(req, res)`).
-5.  **Infrastructure (Wiring)**: Update `src/infrastructure/server.js`.
-    *   Instantiate the new Use Case.
-    *   Inject it into the Controller.
-    *   Define the new Route.
-
-### Switching Database Implementations
-
-This project currently supports:
-*   **Knex.js** (Active): `src/infrastructure/KnexUserRepository.js`
-*   **Raw Postgres** (Legacy): `src/infrastructure/PostgresUserRepository.js`
-*   **In-Memory** (Testing): `src/infrastructure/InMemoryUserRepository.js`
-
-To switch, edit `src/infrastructure/server.js`:
-
-```javascript
-// const userRepository = new InMemoryUserRepository();
-// const userRepository = new PostgresUserRepository();
-const userRepository = new KnexUserRepository(); // Current
-```
-
-### Database Migrations
-
-We use **Knex.js** for query building. Configuration is in `knexfile.js`.
-To modify the schema, it is recommended to create Knex migrations (not currently implemented, but config is ready).
-Currently, schema changes are handled manually via `src/infrastructure/schema.sql`.
-
----
-
-## 🧪 Testing
-
-We use a simple `.http` file for verifying endpoints within VS Code.
-
-1.  Install the **REST Client** extension for VS Code.
-2.  Open `users.http`.
-3.  Click "Send Request" above any URL.
-
-This covers:
-*   Pagination (`GET /users?page=1&limit=5`)
-*   CRUD Operations
+### Adding a New Feature
+1.  Create a new folder in `src/modules/` (e.g., `reviews`).
+2.  Implement `domain`, `usecase`, `interface`, and `infrastructure` folders inside it.
+3.  Wire up the new module in `src/shared/infrastructure/server.js`.
