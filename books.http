@@ -52,3 +52,12 @@ Content-Type: application/json
 ### Check Book 2 Stock (Should be 1)
 GET http://localhost:3000/books/2
 Accept: application/json
+
+### Update Book Stock (Add Stock)
+# NOTE: Replace '1' with actual Book ID
+PUT http://localhost:3000/books/1
+Content-Type: application/json
+
+{
+    "stock": 10
+}
