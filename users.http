@@ -1,0 +1,36 @@
+### Get Users - Page 1, Limit 5
+GET http://localhost:3000/users?page=1&limit=5
+Accept: application/json
+
+### Get Users - Page 2, Limit 2
+GET http://localhost:3000/users?page=2&limit=2
+Accept: application/json
+
+### Get Users - Default Params (Page 1, Limit 10)
+GET http://localhost:3000/users
+Accept: application/json
+
+### Get One User (ID 1)
+GET http://localhost:3000/users/1
+Accept: application/json
+
+### Create User
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "New User",
+    "email": "newuser@example.com"
+}
+
+### Update User (ID 1)
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+    "name": "Updated User 1"
+}
+
+### Delete User (ID 1)
+DELETE http://localhost:3000/users/1
+
