@@ -32,47 +32,50 @@ The project follows the "Clean Architecture" pattern (also known as Onion Archit
 
 ```mermaid
 graph TD
-    %% Nodes
-    Client((Client))
+    %% Node Definitions dengan Ikon Karakter
+    Client("fa:fa-user Client / Browser")
     
-    subgraph Infrastructure ["Infrastructure (Frameworks & Drivers)"]
-        Server[Express Server]
-        DB[(PostgreSQL)]
-        RepoImpl[KnexUserRepository]
-    end
-    
-    subgraph Interface ["Interface Adapters"]
-        Controller[UserController]
-    end
-    
-    subgraph UseCases ["Use Cases (Business Rules)"]
-        UC["Use Cases<br/>(CreateUser, GetPaginatedUsers...)"]
-    end
-    
-    subgraph Domain ["Domain (Entities)"]
-        Entity[User Entity]
-        RepoInt[UserRepository Interface]
+    subgraph Layer4 [Layer 4: Infrastructure]
+        Server["fa:fa-server Express.js Server"]
+        RepoImpl["fa:fa-database KnexUserRepository"]
+        DB[("(PostgreSQL)")]
     end
 
-    %% Flow
-    Client -- HTTP Request --> Server
-    Server -- Route --> Controller
-    Controller -- Calls --> UC
-    UC -- Uses --> RepoInt
-    RepoImpl -. Implements .-> RepoInt
-    UC -- Returns --> Entity
-    RepoImpl -- Query --> DB
+    subgraph Layer3 [Layer 3: Interface Adapters]
+        Controller["fa:fa-code UserController"]
+    end
+
+    subgraph Layer2 [Layer 2: Use Cases]
+        UC["fa:fa-gear CreateUser / GetUsers"]
+    end
+
+    subgraph Layer1 [Layer 1: Domain]
+        RepoInt{{"fa:fa-interchange UserRepository Interface"}}
+        Entity["fa:fa-box User Entity"]
+    end
+
+    %% Flow Alur Kerja (Atas ke Bawah)
+    Client -->|1. Request| Server
+    Server -->|2. Route| Controller
+    Controller -->|3. Execute| UC
     
-    %% Styling for "Dependencies Point Inwards" visualization
-    classDef domain fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef usecase fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef interface fill:#dfd,stroke:#333,stroke-width:2px;
-    classDef infra fill:#fdd,stroke:#333,stroke-width:2px;
+    %% Alur Dependency Inversion (Logika Inti)
+    UC -->|4. Calls| RepoInt
+    RepoImpl -.->|5. Implements| RepoInt
+    RepoImpl --- DB
     
-    class Entity,RepoInt domain;
+    UC -.->|6. Returns| Entity
+
+    %% Styling yang Lebih Clean & Kontras
+    classDef infra fill:#f5f5f5,stroke:#d2d2d2,stroke-width:2px,color:#333;
+    classDef adapter fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
+    classDef usecase fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:#7f6000;
+    classDef domain fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#7b1fa2;
+
+    class Server,RepoImpl,DB infra;
+    class Controller adapter;
     class UC usecase;
-    class Controller interface;
-    class Server,DB,RepoImpl infra;
+    class RepoInt,Entity domain;
 ```
 
 ---
