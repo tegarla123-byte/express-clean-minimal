@@ -61,3 +61,6 @@ Content-Type: application/json
 {
     "stock": 10
 }
+
+### Delete Book (ID 1)
+DELETE http://localhost:3000/books/1
