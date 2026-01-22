@@ -31,7 +31,7 @@ The project follows the "Clean Architecture" pattern (also known as Onion Archit
 ### Diagram
 
 ```mermaid
-graph TD
+graph LR
     %% Node Definitions dengan Ikon Karakter
     Client("fa:fa-user Client / Browser")
     
