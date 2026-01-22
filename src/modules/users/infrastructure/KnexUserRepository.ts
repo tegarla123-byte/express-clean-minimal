@@ -1,14 +1,14 @@
-const UserRepository = require('../domain/UserRepository');
-const PaginatedResult = require('../../../shared/domain/PaginatedResult');
-const db = require('../../../shared/infrastructure/db');
-const User = require('../domain/User');
+import { UserRepository } from '../domain/UserRepository';
+import { PaginatedResult } from '../../../shared/domain/PaginatedResult';
+import db from '../../../shared/infrastructure/db';
+import { User } from '../domain/User';
 
-class KnexUserRepository extends UserRepository {
-    async findMany(page, limit) {
+export class KnexUserRepository extends UserRepository {
+    async findMany(page: number, limit: number): Promise<PaginatedResult<User>> {
         const offset = (page - 1) * limit;
 
         const countResult = await db('users').count('id as count').first();
-        const totalItems = parseInt(countResult.count);
+        const totalItems = parseInt(countResult?.count as string || '0');
 
         const rows = await db('users')
             .select('*')
@@ -16,7 +16,7 @@ class KnexUserRepository extends UserRepository {
             .offset(offset)
             .orderBy('id', 'asc');
 
-        const users = rows.map(row => new User(row.id, row.name, row.email));
+        const users = rows.map((row: any) => new User(row.id, row.name, row.email));
         const totalPages = Math.ceil(totalItems / limit);
 
         return new PaginatedResult(users, {
@@ -27,13 +27,13 @@ class KnexUserRepository extends UserRepository {
         });
     }
 
-    async findById(id) {
+    async findById(id: number): Promise<User | null> {
         const row = await db('users').where({ id }).first();
         if (!row) return null;
         return new User(row.id, row.name, row.email);
     }
 
-    async create(userData) {
+    async create(userData: { name: string; email: string }): Promise<User> {
         const [row] = await db('users')
             .insert({
                 name: userData.name,
@@ -43,7 +43,7 @@ class KnexUserRepository extends UserRepository {
         return new User(row.id, row.name, row.email);
     }
 
-    async update(id, userData) {
+    async update(id: number, userData: { name: string }): Promise<User | null> {
         const [row] = await db('users')
             .where({ id })
             .update(userData)
@@ -53,10 +53,8 @@ class KnexUserRepository extends UserRepository {
         return new User(row.id, row.name, row.email);
     }
 
-    async delete(id) {
+    async delete(id: number): Promise<boolean> {
         const deletedCount = await db('users').where({ id }).del();
         return deletedCount > 0;
     }
 }
-
-module.exports = KnexUserRepository;

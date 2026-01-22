@@ -1,7 +1,9 @@
-require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
-const db = require('./db');
+import fs from 'fs';
+import path from 'path';
+import db from './db';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 async function setup() {
     try {

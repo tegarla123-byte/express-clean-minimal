@@ -1,7 +1,9 @@
-const knex = require('knex');
-require('dotenv').config();
+import knex from 'knex';
+import dotenv from 'dotenv';
 const knexConfig = require('../../../knexfile');
-const logger = require('./Logger');
+import logger from './Logger';
+
+dotenv.config();
 
 const environment = process.env.NODE_ENV || 'development';
 const connectionConfig = knexConfig[environment];
@@ -23,4 +25,4 @@ db.on('query-error', (error, obj) => {
     });
 });
 
-module.exports = db;
+export default db;

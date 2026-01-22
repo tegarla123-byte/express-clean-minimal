@@ -1,14 +1,14 @@
-const BookRepository = require('../domain/BookRepository');
-const PaginatedResult = require('../../../shared/domain/PaginatedResult');
-const db = require('../../../shared/infrastructure/db');
-const Book = require('../domain/Book');
+import { BookRepository } from '../domain/BookRepository';
+import { PaginatedResult } from '../../../shared/domain/PaginatedResult';
+import db from '../../../shared/infrastructure/db';
+import { Book } from '../domain/Book';
 
-class KnexBookRepository extends BookRepository {
-    async findMany(page, limit) {
+export class KnexBookRepository extends BookRepository {
+    async findMany(page: number, limit: number): Promise<PaginatedResult<Book>> {
         const offset = (page - 1) * limit;
 
         const countResult = await db('books').count('id as count').first();
-        const totalItems = parseInt(countResult.count);
+        const totalItems = parseInt(countResult?.count as string || '0');
 
         const rows = await db('books')
             .select('*')
@@ -16,7 +16,7 @@ class KnexBookRepository extends BookRepository {
             .offset(offset)
             .orderBy('id', 'asc');
 
-        const books = rows.map(row => new Book(row.id, row.title, row.author, row.stock));
+        const books = rows.map((row: any) => new Book(row.id, row.title, row.author, row.stock));
         const totalPages = Math.ceil(totalItems / limit);
 
         return new PaginatedResult(books, {
@@ -27,24 +27,20 @@ class KnexBookRepository extends BookRepository {
         });
     }
 
-    async findById(id) {
+    async findById(id: number): Promise<Book | null> {
         const row = await db('books').where({ id }).first();
         if (!row) return null;
         return new Book(row.id, row.title, row.author, row.stock);
     }
 
-    async create(bookData) {
+    async create(bookData: { title: string; author: string; stock: number }): Promise<Book> {
         const [row] = await db('books')
-            .insert({
-                title: bookData.title,
-                author: bookData.author,
-                stock: bookData.stock
-            })
+            .insert(bookData)
             .returning('*');
         return new Book(row.id, row.title, row.author, row.stock);
     }
 
-    async update(id, bookData) {
+    async update(id: number, bookData: { title?: string; author?: string; stock?: number }): Promise<Book | null> {
         const [row] = await db('books')
             .where({ id })
             .update(bookData)
@@ -54,26 +50,23 @@ class KnexBookRepository extends BookRepository {
         return new Book(row.id, row.title, row.author, row.stock);
     }
 
-    async delete(id) {
+    async delete(id: number): Promise<boolean> {
         const deletedCount = await db('books').where({ id }).del();
         return deletedCount > 0;
     }
 
-    async decrementStock(id) {
-        // Atomic update to prevent race conditions
-        const count = await db('books')
+    async decrementStock(id: number): Promise<boolean> {
+        const result = await db('books')
             .where({ id })
             .andWhere('stock', '>', 0)
             .decrement('stock', 1);
-        return count > 0;
+        return result > 0;
     }
 
-    async incrementStock(id) {
-        const count = await db('books')
+    async incrementStock(id: number): Promise<boolean> {
+        const result = await db('books')
             .where({ id })
             .increment('stock', 1);
-        return count > 0;
+        return result > 0;
     }
 }
-
-module.exports = KnexBookRepository;

@@ -1,6 +1,6 @@
 # Express.js Clean Architecture with Modular Features
 
-This project implements a RESTful API using **Clean Architecture** principles, refactored into a **Feature-Based (Modular)** structure. It includes comprehensive features like User Management, Book Inventory, and a Borrowing System.
+This project implements a RESTful API using **Clean Architecture** principles, refactored into a **Feature-Based (Modular)** structure, and built with **TypeScript** for type safety. It includes comprehensive features like User Management, Book Inventory, and a Borrowing System.
 
 ## 🌟 Features
 
@@ -17,6 +17,7 @@ This project implements a RESTful API using **Clean Architecture** principles, r
 *   **Complex Business Logic**: Borrowing system with atomic stock management.
 *   **Server-Side Pagination**: Efficient data retrieval.
 *   **Hot Reload**: `nodemon` for development.
+*   **TypeScript**: Fully typed codebase for better developer experience and reliability.
 
 ## 🏗️ Architecture Overview
 
@@ -125,7 +126,7 @@ src/
     *   Ensure your Postgres database exists.
     *   Run the setup script to create tables (`users`, `books`, `borrows`):
         ```bash
-        node src/shared/infrastructure/setup_db.js
+        npx ts-node src/shared/infrastructure/setup_db.ts
         ```
 
 ### Running the App
@@ -135,9 +136,14 @@ src/
     npm run dev
     ```
 *   **Production Mode**:
-    ```bash
-    npm start
-    ```
+    1.  Build the project:
+        ```bash
+        npm run build
+        ```
+    2.  Start the compiled server:
+        ```bash
+        npm start
+        ```
 
 API runs at `http://localhost:3000`.
 
@@ -160,4 +166,4 @@ Logs are stored in the `/logs` directory at the project root.
 ### Adding a New Feature
 1.  Create a new folder in `src/modules/` (e.g., `reviews`).
 2.  Implement `domain`, `usecase`, `interface`, and `infrastructure` folders inside it.
-3.  Wire up the new module in `src/shared/infrastructure/server.js`.
+3.  Wire up the new module in `src/shared/infrastructure/server.ts`.
