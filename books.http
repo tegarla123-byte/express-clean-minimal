@@ -1,0 +1,54 @@
+### Create Book 1
+POST http://localhost:3000/books
+Content-Type: application/json
+
+{
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "stock": 5
+}
+
+### Create Book 2 (Low Stock)
+POST http://localhost:3000/books
+Content-Type: application/json
+
+{
+    "title": "The Pragmatic Programmer",
+    "author": "Andy Hunt",
+    "stock": 1
+}
+
+### Get Books
+GET http://localhost:3000/books?page=1&limit=10
+Accept: application/json
+
+### Get Single Book
+GET http://localhost:3000/books/1
+Accept: application/json
+
+### User 1 Borrows Book 2 (Stock 1 -> 0)
+POST http://localhost:3000/borrow
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "bookId": 2
+}
+
+### User 2 Tries to Borrow Book 2 (Stock 0 - Should Fail)
+POST http://localhost:3000/borrow
+Content-Type: application/json
+
+{
+    "userId": 2,
+    "bookId": 2
+}
+
+### Return Book 2 (Stock 0 -> 1)
+# NOTE: Replace '1' with actual Borrow ID from the first borrow response
+POST http://localhost:3000/return/1
+Content-Type: application/json
+
+### Check Book 2 Stock (Should be 1)
+GET http://localhost:3000/books/2
+Accept: application/json

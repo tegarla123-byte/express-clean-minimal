@@ -13,17 +13,17 @@ class UserController {
         this.deleteUserUseCase = deleteUserUseCase;
     }
 
-    async getUsers(req, res) {
+    async getUsers(req, res, next) {
         try {
             const { page, limit } = req.query;
             const result = await this.getPaginatedUsersUseCase.execute(page, limit);
             res.json(result);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            next(error);
         }
     }
 
-    async getUser(req, res) {
+    async getUser(req, res, next) {
         try {
             const { id } = req.params;
             const user = await this.getUserUseCase.execute(id);
@@ -32,20 +32,20 @@ class UserController {
             }
             res.json(user);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            next(error);
         }
     }
 
-    async createUser(req, res) {
+    async createUser(req, res, next) {
         try {
             const user = await this.createUserUseCase.execute(req.body);
             res.status(201).json(user);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            next(error);
         }
     }
 
-    async updateUser(req, res) {
+    async updateUser(req, res, next) {
         try {
             const { id } = req.params;
             const user = await this.updateUserUseCase.execute(id, req.body);
@@ -54,11 +54,11 @@ class UserController {
             }
             res.json(user);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            next(error);
         }
     }
 
-    async deleteUser(req, res) {
+    async deleteUser(req, res, next) {
         try {
             const { id } = req.params;
             const success = await this.deleteUserUseCase.execute(id);
@@ -67,7 +67,7 @@ class UserController {
             }
             res.status(204).send();
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            next(error);
         }
     }
 }
