@@ -1,5 +1,7 @@
 const express = require('express');
-const InMemoryUserRepository = require('./InMemoryUserRepository');
+// const InMemoryUserRepository = require('./InMemoryUserRepository');
+// const PostgresUserRepository = require('./PostgresUserRepository');
+const KnexUserRepository = require('./KnexUserRepository');
 // Use Cases
 const GetPaginatedUsers = require('../usecase/GetPaginatedUsers');
 const CreateUser = require('../usecase/CreateUser');
@@ -10,12 +12,14 @@ const DeleteUser = require('../usecase/DeleteUser');
 const UserController = require('../interface/UserController');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json()); // Middleware for parsing JSON bodies
 
 // Dependency Injection
-const userRepository = new InMemoryUserRepository();
+// const userRepository = new InMemoryUserRepository();
+// const userRepository = new PostgresUserRepository();
+const userRepository = new KnexUserRepository();
 
 // Use Case Instantiation
 const getPaginatedUsersUseCase = new GetPaginatedUsers(userRepository);
