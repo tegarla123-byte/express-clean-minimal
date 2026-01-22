@@ -1,6 +1,6 @@
 const UserRepository = require('../domain/UserRepository');
-const PaginatedResult = require('../domain/PaginatedResult');
-const db = require('./db');
+const PaginatedResult = require('../../../shared/domain/PaginatedResult');
+const db = require('../../../shared/infrastructure/db');
 const User = require('../domain/User');
 
 class KnexUserRepository extends UserRepository {

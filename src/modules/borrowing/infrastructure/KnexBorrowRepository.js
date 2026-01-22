@@ -1,5 +1,5 @@
 const BorrowRepository = require('../domain/BorrowRepository');
-const db = require('./db');
+const db = require('../../../shared/infrastructure/db');
 const Borrow = require('../domain/Borrow');
 
 class KnexBorrowRepository extends BorrowRepository {

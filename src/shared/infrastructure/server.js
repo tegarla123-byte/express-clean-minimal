@@ -1,33 +1,32 @@
 const express = require('express');
-// const InMemoryUserRepository = require('./InMemoryUserRepository');
-// const PostgresUserRepository = require('./PostgresUserRepository');
-const KnexUserRepository = require('./KnexUserRepository');
-const KnexBookRepository = require('./KnexBookRepository');
-const KnexBorrowRepository = require('./KnexBorrowRepository');
+// Repositories
+const KnexUserRepository = require('../../modules/users/infrastructure/KnexUserRepository');
+const KnexBookRepository = require('../../modules/books/infrastructure/KnexBookRepository');
+const KnexBorrowRepository = require('../../modules/borrowing/infrastructure/KnexBorrowRepository');
 const logger = require('./Logger');
 
 // Use Cases - User
-const GetPaginatedUsers = require('../usecase/GetPaginatedUsers');
-const CreateUser = require('../usecase/CreateUser');
-const GetUser = require('../usecase/GetUser');
-const UpdateUser = require('../usecase/UpdateUser');
-const DeleteUser = require('../usecase/DeleteUser');
+const GetPaginatedUsers = require('../../modules/users/usecase/GetPaginatedUsers');
+const CreateUser = require('../../modules/users/usecase/CreateUser');
+const GetUser = require('../../modules/users/usecase/GetUser');
+const UpdateUser = require('../../modules/users/usecase/UpdateUser');
+const DeleteUser = require('../../modules/users/usecase/DeleteUser');
 
 // Use Cases - Book
-const GetPaginatedBooks = require('../usecase/GetPaginatedBooks');
-const CreateBook = require('../usecase/CreateBook');
-const GetBook = require('../usecase/GetBook');
-const UpdateBook = require('../usecase/UpdateBook');
-const DeleteBook = require('../usecase/DeleteBook');
+const GetPaginatedBooks = require('../../modules/books/usecase/GetPaginatedBooks');
+const CreateBook = require('../../modules/books/usecase/CreateBook');
+const GetBook = require('../../modules/books/usecase/GetBook');
+const UpdateBook = require('../../modules/books/usecase/UpdateBook');
+const DeleteBook = require('../../modules/books/usecase/DeleteBook');
 
 // Use Cases - Borrow
-const BorrowBook = require('../usecase/BorrowBook');
-const ReturnBook = require('../usecase/ReturnBook');
+const BorrowBook = require('../../modules/borrowing/usecase/BorrowBook');
+const ReturnBook = require('../../modules/borrowing/usecase/ReturnBook');
 
 // Interface
-const UserController = require('../interface/UserController');
-const BookController = require('../interface/BookController');
-const BorrowController = require('../interface/BorrowController');
+const UserController = require('../../modules/users/interface/UserController');
+const BookController = require('../../modules/books/interface/BookController');
+const BorrowController = require('../../modules/borrowing/interface/BorrowController');
 
 const app = express();
 const port = process.env.PORT || 3000;

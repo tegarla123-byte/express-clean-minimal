@@ -1,6 +1,6 @@
 const BookRepository = require('../domain/BookRepository');
-const PaginatedResult = require('../domain/PaginatedResult');
-const db = require('./db');
+const PaginatedResult = require('../../../shared/domain/PaginatedResult');
+const db = require('../../../shared/infrastructure/db');
 const Book = require('../domain/Book');
 
 class KnexBookRepository extends BookRepository {
