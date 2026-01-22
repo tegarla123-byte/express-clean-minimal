@@ -46,7 +46,7 @@ graph TD
     end
     
     subgraph UseCases ["Use Cases (Business Rules)"]
-        UC[Use Cases\n(CreateUser, GetPaginatedUsers...)]
+        UC["Use Cases<br/>(CreateUser, GetPaginatedUsers...)"]
     end
     
     subgraph Domain ["Domain (Entities)"]
